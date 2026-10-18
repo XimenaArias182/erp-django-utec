@@ -93,7 +93,7 @@ cobertura de pruebas ≥ 15 tests de modelo.
 
 | Rol | Nombre | Fecha | Observaciones |
 |---|---|---|---|
-| Desarrollador | [Nombre] | | |
+| Desarrollador | [Nombre] | |✅ |
 | **Asesor (PO)** | **MC. Román Fernando López González** | | |
 
 > ⚠️ **La Espiral 2 (W05) no puede iniciar sin la aprobación registrada aquí.**
