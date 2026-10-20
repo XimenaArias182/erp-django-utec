@@ -9,7 +9,7 @@ urlpatterns = [
     # Lectura (W07)
     path('',
          views.ProductoListView.as_view(),
-         name='lista'),
+         name='inicio'),
     path('<int:producto_id>/',
          views.ProductoDetailView.as_view(),
          name='detalle'),
