@@ -1,3 +1,8 @@
-from django.shortcuts import render
+# configuracion/views.py
+from django.views.generic import TemplateView
 
-# Create your views here.
+
+class ConfiguracionDetailView(TemplateView):
+    """Vista principal de ajustes del ERP."""
+
+    template_name = 'configuracion/detalle.html'

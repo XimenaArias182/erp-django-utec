@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#0A2342">
-    <title>{% block title %}ERP Django{% endblock %} · UTEC Celaya</title>
+    <title>{% block title %}DANDELION STAR{% endblock %} DANDELION STAR </title>
 
     <!-- Google Fonts: Playfair Display + Inter + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,25 +23,25 @@
             --clr-navy   : #0A2342;
             --clr-royal  : #1B4F8A;
             --clr-sky    : #4A90D9;
-            --clr-ice    : #E8F0FB;
-            --clr-gold   : #B8860B;
+            --clr-ice    : #ffffff;
+            --clr-gold   : #ffffff;
             --clr-amber  : #D4A017;
-            --clr-cream  : #FDF8E8;
-            --clr-bg     : #F5F7FA;
-            --clr-surface: #FFFFFF;
-            --clr-text   : #1A1A2E;
-            --clr-muted  : #5A6A7E;
-            --clr-border : #C8D8EC;
-            --clr-danger : #C0392B;
+            --clr-cream  : #506a88;
+            --clr-bg     : #ffffff;
+            --clr-surface: #97a9b4;
+            --clr-text   : #000000;
+            --clr-muted  : #000000;
+            --clr-border : #49586b;
+            --clr-danger : #253047;
             --clr-ok     : #1A7A4A;
             --shadow-sm  : 0 1px 4px rgba(10,35,66,.08);
             --shadow-md  : 0 4px 16px rgba(10,35,66,.12);
         }
         /* TOKENS MODO NOCHE */
         [data-theme="dark"] {
-            --clr-navy   : #1E3A5F;
-            --clr-royal  : #2E5F9E;
-            --clr-sky    : #6BAEE8;
+            --clr-navy   : #0e458d;
+            --clr-royal  : #4d6079;
+            --clr-sky    : #000000;
             --clr-ice    : #1A2A3A;
             --clr-gold   : #D4AF37;
             --clr-amber  : #E8C547;
@@ -75,6 +75,7 @@
             display: flex; align-items: center;
             justify-content: space-between; flex-wrap: wrap; gap: .5rem;
             box-shadow: var(--shadow-md);
+            
         }
         .erp-brand {
             font-family: 'Playfair Display',Georgia,serif;
@@ -251,17 +252,17 @@
 
 <!-- NAVBAR -->
 <nav class="erp-navbar">
-    <a class="erp-brand" href="/">📦 ERP Django <span>· UTEC Celaya</span></a>
+    <a class="erp-brand" href="/"> DANDELION STAR <span>
     <div class="erp-nav-links">
-        <a href="{% url 'productos:inicio' %}"
+        <a href="{% url 'productos:lista' %}"
            class="erp-nav-link {% block nav_productos %}{% endblock %}">Productos</a>
-        <a href="{% url 'clientes:inicio' %}"
+        <a href="{% url 'clientes:lista' %}"
            class="erp-nav-link {% block nav_clientes %}{% endblock %}">Clientes</a>
-        <a href="{% url 'proveedores:inicio' %}"
+        <a href="{% url 'proveedores:lista' %}"
            class="erp-nav-link {% block nav_proveedores %}{% endblock %}">Proveedores</a>
-        <a href="{% url 'ventas:inicio' %}"
+        <a href="{% url 'ventas:lista' %}"
            class="erp-nav-link {% block nav_ventas %}{% endblock %}">Ventas</a>
-        <a href="{% url 'reportes:inicio' %}"
+        <a href="{% url 'reportes:lista' %}"
            class="erp-nav-link {% block nav_reportes %}{% endblock %}">Reportes</a>
         <a href="/admin/" class="erp-nav-link">Admin</a>
         {% if user.is_authenticated %}
@@ -298,7 +299,7 @@
 
 <!-- FOOTER -->
 <footer class="erp-footer">
-    ERP Django · Django 4.2 LTS · Fable 5 AzulERP · UTEC Celaya · Espiral 1
+    Dandelion Star - Ximena Arias 
 </footer>
 
 <!-- Bootstrap JS -->
@@ -328,3 +329,4 @@
 {% block extra_js %}{% endblock %}
 </body>
 </html>
+

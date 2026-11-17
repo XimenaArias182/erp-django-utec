@@ -2,17 +2,17 @@
 import environ
 from pathlib import Path
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ── Variables de entorno ──────────────────────────────────────────────────
 env = environ.Env(DEBUG=(bool, True))
-environ.Env.read_env(BASE_DIR / '.env', encoding = 'utf-8')
+environ.Env.read_env(BASE_DIR / '.env', encoding='utf-8')
 
-SECRET_KEY  = env('SECRET_KEY', default='dev-key-insegura-solo-para-desarrollo')
+SECRET_KEY = env('SECRET_KEY', default='dev-key-insegura-solo-para-desarrollo')
 DEBUG = env('DEBUG', default=True)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['.onrender.com', 'localhost', '127.0.0.1'])
 
-# ── Apps instaladas ───────────────────────────────────────────────────────
 INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
@@ -21,10 +21,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     # Terceros
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     'rest_framework',
     'whitenoise.runserver_nostatic',
     # Apps del ERP
+    'core',
     'clientes',
     'proveedores',
     'productos',
@@ -42,6 +47,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -50,7 +56,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],       # carpeta global de templates
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,8 +88,7 @@ STATIC_URL  = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 WHITENOISE_MANIFEST_STRICT = False
-# STATICFILES_DIRS ≠ STATIC_ROOT (error frecuente)
-STATICFILES_DIRS = [BASE_DIR / 'static']  # fuentes adicionales
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # ── Archivos media ────────────────────────────────────────────────────────
 MEDIA_URL  = '/media/'
@@ -103,72 +108,71 @@ REST_FRAMEWORK = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# core/settings.py — agregar al final del archivo
+# ── DJANGO SITES ──────────────────────────────────────────────────────────
+SITE_ID = 1
 
-# ── JAZZMIN — Personalización del admin con Fable 5 AzulERP ───────────────
+# ── AUTHENTICATION BACKENDS ───────────────────────────────────────────────
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# ── ALLAUTH ───────────────────────────────────────────────────────────────
+ACCOUNT_LOGIN_METHODS      = {'username'}
+ACCOUNT_EMAIL_REQUIRED     = False
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_LOGOUT_ON_GET      = True
+ACCOUNT_SESSION_REMEMBER   = True
+
+# ── JAZZMIN ───────────────────────────────────────────────────────────────
 JAZZMIN_SETTINGS = {
-    # Identidad
-    'site_title':       'ERP Django',
-    'site_header':      'ERP UTEC Celaya',
-    'site_brand':       '📦 ERP Django',
-    'welcome_sign':     'Bienvenido al Sistema ERP · UTEC Celaya',
-    'copyright':        'MC. Román Fernando López González · UTEC Celaya',
-
-    # Icono del sitio (usar emoji como fallback)
+    'site_title':       'Dandelion Star',
+    'site_header':      'Ximena Arias Moya',
+    'site_brand':       'DANDELION STAR',
+    'welcome_sign':     'Bienvenido a Dandelion Star ',
+    'copyright':        'Ximena Arias Moya',
     'site_icon':        None,
-    'site_logo':        None,    # ruta a logo en static/ (agregar en W11+)
-
-    # Búsqueda global en el admin
+    'site_logo':        None,
     'search_model':     ['clientes.Cliente', 'productos.Producto'],
-
-    # Menú superior (top navigation)
     'topmenu_links': [
         {'name': 'Inicio ERP',   'url': '/', 'new_window': False},
         {'name': 'Productos',    'url': '/productos/'},
         {'name': 'Clientes',     'url': '/clientes/'},
         {'name': 'Ventas',       'url': '/ventas/'},
     ],
-
-    # Menú de usuario (avatar)
     'usermenu_links': [
         {'name': 'Ver ERP', 'url': '/', 'new_window': False},
     ],
-
-    # Menú lateral: orden de apps y modelos
     'order_with_respect_to': [
         'clientes', 'proveedores', 'productos',
         'ventas', 'configuracion', 'auth',
     ],
-
-    # Iconos de Font Awesome para cada modelo
     'icons': {
-        'auth':                       'fas fa-users-cog',
-        'auth.user':                  'fas fa-user',
-        'auth.Group':                 'fas fa-users',
-        'clientes.Cliente':           'fas fa-user-tie',
-        'proveedores.Proveedor':      'fas fa-truck',
-        'productos.Categoria':        'fas fa-tags',
-        'productos.Producto':         'fas fa-box',
-        'ventas.Venta':               'fas fa-file-invoice-dollar',
-        'ventas.DetalleVenta':        'fas fa-list',
-        'ventas.Pedido':              'fas fa-shopping-cart',
+        'auth':                          'fas fa-users-cog',
+        'auth.user':                     'fas fa-user',
+        'auth.Group':                    'fas fa-users',
+        'clientes.Cliente':              'fas fa-user-tie',
+        'proveedores.Proveedor':          'fas fa-truck',
+        'productos.Categoria':           'fas fa-tags',
+        'productos.Producto':            'fas fa-box',
+        'ventas.Venta':                  'fas fa-file-invoice-dollar',
+        'ventas.DetalleVenta':           'fas fa-list',
+        'ventas.Pedido':                 'fas fa-shopping-cart',
         'configuracion.ConfiguracionERP': 'fas fa-cogs',
     },
     'default_icon_parents': 'fas fa-folder',
     'default_icon_children': 'fas fa-circle',
-
-    # Apariencia
-    'related_modal_active':     True,
-    'custom_css':               'erp_custom.css',   # archivo en static/
-    'show_sidebar':             True,
+    'related_modal_active':    True,
+    'custom_css':              'erp_custom.css',
+    'show_sidebar':            True,
     'navigation_expanded':      True,
-    'hide_apps':                [],
-    'hide_models':              [],
-
-    # UI tweaks
-    'changeform_format':        'horizontal_tabs',
-    'language_chooser':         False,
+    'hide_apps':               [],
+    'hide_models':             [],
+    'changeform_format':       'horizontal_tabs',
+    'language_chooser':        False,
 }
+
+# En core/settings.py dentro de JAZZMIN_UI_TWEAKS
 
 JAZZMIN_UI_TWEAKS = {
     'navbar_small_text':        False,
@@ -191,7 +195,7 @@ JAZZMIN_UI_TWEAKS = {
     'sidebar_nav_legacy_style': False,
     'sidebar_nav_flat_style':   False,
     'theme':                    'default',
-    'dark_mode_theme':          None,
+    'default_theme_mode':       'auto',  # <── Cambiado para eliminar la advertencia
     'button_classes': {
         'primary':   'btn-primary',
         'secondary': 'btn-secondary',
@@ -201,4 +205,3 @@ JAZZMIN_UI_TWEAKS = {
         'success':   'btn-success',
     },
 }
-

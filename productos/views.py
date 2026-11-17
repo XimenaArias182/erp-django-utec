@@ -1,32 +1,25 @@
 # productos/views.py
-"""Vistas de la app productos — W07.
+"""Vistas de la app productos con control de acceso RBAC."""
+from django.contrib import messages
+from core.mixins import ERPAuthPermissionMixin
+from django.urls import reverse_lazy
+from django.views.generic import (
+    CreateView, DeleteView, DetailView, ListView, UpdateView
+)
 
-ListView y DetailView con select_related y paginación.
-Escritura (Create/Update/Delete) se implementa en W08.
-"""
-from django.views.generic import DetailView, ListView
-
+from .forms import ProductoForm
 from .models import Producto
 
 
 class ProductoListView(ListView):
-    """Lista paginada de productos activos.
+    """Lista paginada de productos activos."""
 
-    Atributos:
-        model:               Modelo a listar.
-        template_name:       Plantilla HTML (Fable 5 AzulERP).
-        context_object_name: Nombre de la variable en el template.
-        paginate_by:         20 productos por página.
-        queryset:            Solo productos activos, con FK pre-cargadas.
-    """
-
-    model               = Producto
-    template_name       = 'productos/lista.html'
+    model = Producto
+    template_name = 'productos/lista.html'
     context_object_name = 'productos'
-    paginate_by         = 20
+    paginate_by = 20
 
     def get_queryset(self):
-        """Devuelve productos activos con FKs pre-cargadas (evita N+1)."""
         return (
             Producto.objects
             .select_related('categoria', 'proveedor')
@@ -36,21 +29,65 @@ class ProductoListView(ListView):
 
 
 class ProductoDetailView(DetailView):
-    """Detalle de un producto por ID de URL.
+    """Detalle de un producto por ID."""
 
-    Atributos:
-        model:               Modelo a mostrar.
-        template_name:       Plantilla HTML.
-        context_object_name: Nombre en el template ('producto').
-        pk_url_kwarg:        Parámetro de URL. Usa 'producto_id'
-                             para ser consistente con W02.
-    """
-
-    model               = Producto
-    template_name       = 'productos/detalle.html'
+    model = Producto
+    template_name = 'productos/detalle.html'
     context_object_name = 'producto'
-    pk_url_kwarg        = 'producto_id'
 
     def get_queryset(self):
-        """Pre-carga FKs para evitar queries adicionales en el template."""
         return Producto.objects.select_related('categoria', 'proveedor')
+
+
+class ProductoCreateView(ERPAuthPermissionMixin, CreateView):
+    """Formulario para crear un nuevo producto."""
+
+    model = Producto
+    form_class = ProductoForm
+    template_name = 'productos/crear.html'
+    permission_required = 'productos.add_producto'
+    raise_exception = True
+    success_url = reverse_lazy('productos:lista')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(
+            self.request,
+            f'Producto "{self.object.nombre}" creado exitosamente.'
+        )
+        return response
+
+
+class ProductoUpdateView(ERPAuthPermissionMixin, UpdateView):
+    """Formulario para editar un producto existente."""
+
+    model = Producto
+    form_class = ProductoForm
+    template_name = 'productos/editar.html'
+    permission_required = 'productos.change_producto'
+    raise_exception = True
+    success_url = reverse_lazy('productos:lista')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(
+            self.request,
+            f'Producto "{self.object.nombre}" actualizado.'
+        )
+        return response
+
+
+class ProductoDeleteView(ERPAuthPermissionMixin, DeleteView):
+    """Confirmación y borrado de un producto."""
+
+    model = Producto
+    template_name = 'productos/eliminar.html'
+    permission_required = 'productos.delete_producto'
+    raise_exception = True
+    success_url = reverse_lazy('productos:lista')
+
+    def form_valid(self, form):
+        nombre = self.object.nombre
+        response = super().form_valid(form)
+        messages.success(self.request, f'Producto "{nombre}" eliminado.')
+        return response
