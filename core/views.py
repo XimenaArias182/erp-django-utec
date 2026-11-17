@@ -52,6 +52,9 @@ class InicioView(TemplateView):
 
     def _obtener_url(self, nombre_ruta):
         try:
-            return reverse_lazy(nombre_ruta)
+            return reverse(nombre_ruta)
         except NoReverseMatch:
             return '#'
+
+
+bienvenida = InicioView.as_view()
