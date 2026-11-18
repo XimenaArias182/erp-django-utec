@@ -1,4 +1,3 @@
-# productos/models.py
 """Modelos de la app productos — ERP Django."""
 from decimal import Decimal
 
@@ -7,6 +6,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from proveedores.models import Proveedor
+from .validators import validar_imagen_producto
 
 
 class Categoria(models.Model):
@@ -65,7 +65,8 @@ class Producto(models.Model):
         null=True,
         blank=True,
         verbose_name='Imagen del producto',
-        help_text='Formatos permitidos: JPEG, PNG, WEBP. Máximo 5 MB.'
+        help_text='Formatos permitidos: JPEG, PNG, WEBP. Máximo 5 MB.',
+        validators=[validar_imagen_producto],
     )
     activo = models.BooleanField(
         default=True, verbose_name='Activo'
